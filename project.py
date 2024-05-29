@@ -42,7 +42,6 @@ def extract_feature(file_name, mfcc, chroma, mel, contrast, tonnetz):
             result = np.hstack((result, tonnetz))    
     return result
 
-#DataFlair - Emotions in the RAVDESS dataset
 emotions={
   '01':'neutral',
   '02':'calm',
@@ -54,13 +53,10 @@ emotions={
   '08':'surprised'
 }
 
-#DataFlair - Emotions to observe
 observed_emotions={'fearful', 'happy', 'neutral', 'disgust',
                    'sad','angry','surprised'}
 
-#DataFlair - Load the data and extract features for each sound file
 def load_data(test_size=0.2):
-    #y, mels, chromas, mfccs = [],[],[],[]
     x,y=[],[]
     for file in glob.glob('/home/karn/Desktop/ravdess-data/Actor_*/*.wav'):
         file_name=os.path.basename(file)
