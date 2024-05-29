@@ -42,20 +42,6 @@ def extract_feature(file_name, mfcc, chroma, mel, contrast, tonnetz):
             result = np.hstack((result, tonnetz))    
     return result
 
-emotions={
-  '01':'neutral',
-  '02':'calm',
-  '03':'happy',
-  '04':'sad',
-  '05':'angry',
-  '06':'fearful',
-  '07':'disgust',
-  '08':'surprised'
-}
-
-observed_emotions={'fearful', 'happy', 'neutral', 'disgust',
-                   'sad','angry','surprised'}
-
 def load_data(test_size=0.2):
     x,y=[],[]
     for file in glob.glob('/home/karn/Desktop/ravdess-data/Actor_*/*.wav'):
@@ -119,6 +105,22 @@ def train_MLPC(data, target):
     
     preds = model.predict(x_test)
     return model, confusion_matrix(y_test, preds)
+
+
+emotions={
+  '01':'neutral',
+  '02':'calm',
+  '03':'happy',
+  '04':'sad',
+  '05':'angry',
+  '06':'fearful',
+  '07':'disgust',
+  '08':'surprised'
+}
+
+observed_emotions={'fearful', 'happy', 'neutral', 'disgust',
+                   'sad','angry','surprised'}
+
 
 data,y = load_data()
 data = MDS(n_components=97).fit_transform(data)
