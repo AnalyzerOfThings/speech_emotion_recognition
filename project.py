@@ -81,7 +81,7 @@ def is_active(data):
     ACTIVE_EMOTIONS = {'angry', 'fear', 'happy', 'surprised'}
     emotion_list=[]
     for i in range(len(data)):
-        if data[180].iloc[i] in ACTIVE_EMOTIONS: # 180 contains labels
+        if data[97].iloc[i] in ACTIVE_EMOTIONS: # 180 contains labels
             emotion_list.append('active')
         else:
             emotion_list.append('passive')
@@ -91,7 +91,7 @@ def is_active(data):
 def is_emotion(emotion, data):
     emotion_list=[]
     for i in range(len(data)):
-        if data[180].iloc[i]==emotion: 
+        if data[97].iloc[i]==emotion: 
             emotion_list.append(emotion)
         else:
             emotion_list.append('not '+emotion)
@@ -101,9 +101,9 @@ def is_emotion(emotion, data):
 def this_or_that(this, that, data):
     emotion_list = []
     for i in range(len(data)):
-        if data[180].iloc[i] == this:
+        if data[97].iloc[i] == this:
             emotion_list.append(this)
-        elif data[180].iloc[i] == that:
+        elif data[97].iloc[i] == that:
             emotion_list.append(that)
         else:
             emotion_list.append(np.nan)
@@ -111,10 +111,10 @@ def this_or_that(this, that, data):
     return data
 
 def train_MLPC(data, target):
-    features = [str(i) for i in range(180)]
+    features = [str(i) for i in range(97)]
     param_grid = {'activation':['identity', 'logistic', 'tanh', 'relu'],
                   'solver':['lbfgs', 'sgd', 'adam'],
-                  'hidden_layer_sizes':[(i,) for i in range(22)]}
+                  'hidden_layer_sizes':[(i,) for i in range(12)]}
     model = HalvingGridSearchCV(MLPClassifier(max_iter=10000), param_grid, cv=3, 
                          scoring='accuracy')
     x_train, x_test, y_train, y_test = train_test_split(data[features], 
@@ -125,7 +125,7 @@ def train_MLPC(data, target):
     return model, confusion_matrix(y_test, preds)
 
 data,y = load_data()
-data = MDS(n_components=180).fit_transform(data)
+data = MDS(n_components=97).fit_transform(data)
 data = pd.DataFrame(data)
 y=pd.Series(y)
 data = pd.concat([data,y], axis=1, ignore_index=True)
@@ -141,7 +141,7 @@ data = this_or_that('disgust', 'sad', data)
 #%%
 data.columns = data.columns.astype(str)
 
-features = [str(i) for i in range(180)]
+features = [str(i) for i in range(97)]
 data[features] = StandardScaler().fit_transform(data[features])
 
 
@@ -149,9 +149,10 @@ is_active_classifier, active_cm = train_MLPC(data, 'is_active')
 is_fearful_classifier, fear_cm = train_MLPC(data, 'is_fearful')
 is_neutral_classifier, neutral_cm = train_MLPC(data, 'is_neutral')
 is_angry_classifier, angry_cm = train_MLPC(data, 'is_angry')
-happy_or_surprise_classifier, hs_cm = train_MLPC(data.loc[data['180'].isin(['happy', 'surprised'])],
+#%%
+happy_or_surprise_classifier, hs_cm = train_MLPC(data.loc[data['97'].isin(['happy', 'surprised'])],
                                                 'happy_or_surprised')
-disgust_or_sad_classifier, ds_cm = train_MLPC(data.loc[data['180'].isin(['disgust', 'sad'])],
+disgust_or_sad_classifier, ds_cm = train_MLPC(data.loc[data['97'].isin(['disgust', 'sad'])],
                                              'disgust_or_sad')
 
 data['active_preds'] = np.nan * 1248
@@ -161,7 +162,7 @@ data['neutral_preds'] = np.nan * 1248
 data['happy_surprised_preds'] = np.nan * 1248
 data['disgust_sad_preds'] = np.nan * 1248
 
-features = [str(i) for i in range(180)]
+features = [str(i) for i in range(97)]
 
 active_preds = is_active_classifier.predict(data[features])
 data['active_preds'] = active_preds
@@ -206,4 +207,4 @@ for i in range(1248):
         final_preds[i] = 'surprised'
 
 data['final_preds'] = final_preds
-print(accuracy_score(data['180'], data['final_preds']))
+print(accuracy_score(data['97'], data['final_preds']))
